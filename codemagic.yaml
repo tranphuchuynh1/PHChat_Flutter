@@ -1,0 +1,26 @@
+workflows:
+  ios-workflow:
+    name: iOS Workflow
+    environment:
+      flutter: stable
+      xcode: latest
+    scripts:
+      - name: Install CocoaPods
+        script: |
+          sudo gem install cocoapods
+      - name: Update iOS deployment target
+        script: |
+          cd ios
+          if [ -f "Podfile" ]; then
+            sed -i '' 's/platform :ios, .*/platform :ios, '13.0'/' Podfile
+          else
+            pod init
+            sed -i '' 's/# platform :ios, .*/platform :ios, '13.0'/' Podfile
+            echo "flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))" >> Podfile
+          fi
+      - name: Run pod install
+        script: |
+          cd ios
+          pod install
+    artifacts:
+      - build/ios/ipa/*.ipa
